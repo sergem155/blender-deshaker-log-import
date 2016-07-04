@@ -8,7 +8,18 @@ from bpy.props import StringProperty
 from bpy.types import Operator 
 
 #parameters
-damping_factor = 0.9 # distance from center is multiplied by this factor, in each frame
+# damping factor func - 0.95 to 0.35 depending on black bars size
+def damping_function(xv):
+	v = abs(xv)	
+	if (v>400): return 0.35
+	return 0.95-(v/400)*0.6
+
+# for rotation
+def damping_function_r(xv):
+	v = abs(xv)	
+	if (v>15): return 0.35
+	return 0.95-(v/15)*0.6
+
 
 bl_info = {
     "name": "Import Deshaker log",
@@ -45,9 +56,9 @@ def value_generator(filepath,xdamp,ydamp,rdamp):
 				x+=dx
 				y+=dy
 				r+=(-1*float(a[3]))
-			x*=damping_factor
-			y*=damping_factor
-			r*=damping_factor
+			x*=damping_function(x)
+			y*=damping_function(y)
+			r*=damping_function_r(r)
 			kf = int(a[0])
 			if (kf > 0): # correction for one-frame lag in DS log
 				yield (kf-1,x,y,r,new_scene)
