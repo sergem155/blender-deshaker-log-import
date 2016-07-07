@@ -8,7 +8,7 @@ from bpy.types import Operator
 
 #parameters
 reset_to_zero_on_new_scenes = False # ignore new_scene flag in log
-cutoff_freq = 1.0 #Hz
+cutoff_freq = 0.3 #Hz
 kernel_size_half = 32 # 16*2+1 = 33 kernel	
 
 bl_info = {
@@ -32,6 +32,7 @@ def value_generator(filepath):
 		for line in f:
 			a = line.split()
 			new_scene = (len(a)>5 and a[5]=='new_scene')
+			if(a[1]=='skipped'): continue
 			if(reset_to_zero_on_new_scenes and new_scene):
 				x=0.0
 				y=0.0

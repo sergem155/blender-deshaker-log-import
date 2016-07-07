@@ -20,6 +20,8 @@ def damping_function_r(xv):
 	if (v>15): return 0.35
 	return 0.95-(v/15)*0.6
 
+reset_to_zero_on_new_scenes = False # ignore new_scene flag in log
+
 
 bl_info = {
     "name": "Import Deshaker log",
@@ -42,7 +44,8 @@ def value_generator(filepath,xdamp,ydamp,rdamp):
 		for line in f:
 			a = line.split()
 			new_scene = (len(a)>5 and a[5]=='new_scene')
-			if(False and new_scene): # ??? ignore new scenes (+option)
+			if(a[1]=='skipped'): continue
+			if(reset_to_zero_on_new_scenes and new_scene): # ignore new scenes (option)
 				x=0.0
 				y=0.0
 				r=0.0
