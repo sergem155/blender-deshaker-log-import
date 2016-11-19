@@ -36,7 +36,7 @@ bl_info = {
 }
 
 # get values from file, translate to x y in source pixel scale and r angle
-def value_generator(filepath,xdamp,ydamp,rdamp):
+def value_generator(filepath):
 	x=0.0
 	y=0.0
 	r=0.0
@@ -63,8 +63,7 @@ def value_generator(filepath,xdamp,ydamp,rdamp):
 			y*=damping_function(y)
 			r*=damping_function_r(r)
 			kf = int(a[0])
-			if (kf > 0): # correction for one-frame lag in DS log
-				yield (kf-1,x,y,r,new_scene)
+			yield (kf+1,x,y,r,new_scene)
 
 class ImportDeshaker_Class(Operator, ImportHelper): 
 	"""Deshaker log format importer""" 
@@ -89,10 +88,6 @@ class ImportDeshaker_Class(Operator, ImportHelper):
 			return
 		x_percent = 100.0 / (bpy.context.screen.scene.render.resolution_x * bpy.context.screen.scene.render.resolution_percentage / 100.0 )
 		y_percent = 100.0 / (bpy.context.screen.scene.render.resolution_y * bpy.context.screen.scene.render.resolution_percentage / 100.0 )
-		damp_frames = 300
-		xdamp = bpy.context.screen.scene.render.resolution_x / damp_frames
-		ydamp = bpy.context.screen.scene.render.resolution_y / damp_frames
-		rdamp = 180 / damp_frames
 		# detect context
 		screen = bpy.context.window.screen
 		for area in screen.areas:
@@ -112,16 +107,16 @@ class ImportDeshaker_Class(Operator, ImportHelper):
 		strip.translate_start_x = 0
 		strip.translate_start_y = 0
 		strip.rotation_start = 0
-		strip.keyframe_insert(data_path="translate_start_x", frame=0)
-		strip.keyframe_insert(data_path="translate_start_y", frame=0)
-		strip.keyframe_insert(data_path="rotation_start", frame=0)
+		strip.keyframe_insert(data_path="translate_start_x", frame=1)
+		strip.keyframe_insert(data_path="translate_start_y", frame=1)
+		strip.keyframe_insert(data_path="rotation_start", frame=1)
 		# start import
 		kf = 0
 		x=0.0
 		y=0.0
 		r=0.0
 		new_scene = False
-		for (kf,x,y,r,new_scene) in value_generator(filepath,xdamp,ydamp,rdamp):
+		for (kf,x,y,r,new_scene) in value_generator(filepath):
 			strip.translate_start_x = x * x_percent
 			strip.translate_start_y = y * y_percent
 			strip.rotation_start = r

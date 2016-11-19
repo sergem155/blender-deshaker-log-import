@@ -49,8 +49,7 @@ def value_generator(filepath):
 				r+=(-1*float(a[3]))
 				#print ("kf: %d, xi: %0.1f, yi: %0.1f, dx: %0.1f, dy: %0.1f, x: %0.1f, y: %0.1f, r: %0.1f, a_rad: %f" % (int(a[0]),xi,yi,dx,dy,x,y,r, a_rad))
 			kf = int(a[0])
-			if (kf > 0): # correction for one-frame lag in DS log
-				yield (kf-1,x,y,r,new_scene)
+			yield (kf+1,x,y,r,new_scene)
 
 class windowed_sinc: # filter
 	# M number of points ~4/BW; Fc - cutoff freq 0-0.5 of sampling freq
